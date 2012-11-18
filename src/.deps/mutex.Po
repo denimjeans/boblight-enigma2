@@ -1,0 +1,78 @@
+mutex.o: util/mutex.cpp \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/time.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/features.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/sys/cdefs.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/wordsize.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/gnu/stubs.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../lib/gcc/mipsel-unknown-linux-gnu/4.3.2/include/stddef.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/time.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/types.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/typesizes.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/xlocale.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/assert.h \
+  util/mutex.h util/inclstdint.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/stdint.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/wchar.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/inttypes.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/pthread.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/endian.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/endian.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/sched.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/sched.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/signal.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/sigset.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/pthreadtypes.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/setjmp.h \
+  /opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/sgidefs.h
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/time.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/features.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/sys/cdefs.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/wordsize.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/gnu/stubs.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../lib/gcc/mipsel-unknown-linux-gnu/4.3.2/include/stddef.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/time.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/types.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/typesizes.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/xlocale.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/assert.h:
+
+util/mutex.h:
+
+util/inclstdint.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/stdint.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/wchar.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/inttypes.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/pthread.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/endian.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/endian.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/sched.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/sched.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/signal.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/sigset.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/pthreadtypes.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/bits/setjmp.h:
+
+/opt/mipsel-unknown-linux-gnu/bin/../mipsel-unknown-linux-gnu/sys-root/usr/include/sgidefs.h:

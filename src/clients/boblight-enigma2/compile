@@ -1,0 +1,13 @@
+#!/bin/sh
+
+CXXFLAGS="-O2 -g -pg -ggdb3"
+#CXXFLAGS="-O3"
+set -x
+mipsel-unknown-linux-gnu-g++ -I. -I.. -I../../ -I../../../ $CXXFLAGS -c boblight-enigma2.cpp
+mipsel-unknown-linux-gnu-g++ -I. -I.. -I../../ -I../../../ $CXXFLAGS -c flagmanager-enigma2.cpp
+mipsel-unknown-linux-gnu-g++ -I. -I.. -I../../ -I../../../ $CXXFLAGS -c grabber-enigma2.cpp
+mipsel-unknown-linux-gnu-g++ $CXXFLAGS -o boblight-enigma2 grabber-enigma2.o flagmanager-enigma2.o boblight-enigma2.o  -ldl -lm -lrt -lpthread -lstdc++ ../../flagmanager.o ../../misc.o ../../timer.o ../../timeutils.o
+mipsel-unknown-linux-gnu-strip boblight-enigma2
+cp boblight-enigma2 /home/martijn/Bureaublad/Boblight/build/last-build/bin
+#../../.libs/libboblight.a
+#scp boblight-enigma2 *.cpp root@192.168.2.108:/tmp
