@@ -1,6 +1,6 @@
 /*
  * grabber-enigma2
- * Copyright (C) Martijn Vos and Cpresser  2012
+ * Copyright (C) Martijn Vos and c@presser 2012
  *
  * parts of this code were taken from
  * - aiograb		(http://schwerkraft.elitedvb.net/projects/aio-grab/)
@@ -84,9 +84,6 @@ class CGrabber
     
   protected:
     
-    struct timeval start, end;
-
-    long mtime, seconds, useconds; 
         
     //
     // Buffer
@@ -130,10 +127,8 @@ class CGrabber
     int             xres, yres;		        // final resolution
     int             xres_old, yres_old;	    // stored to detect resolution changes
     int             skiplines;		        // downscale-factor (power of two)
-    unsigned char  *luma, *chroma;         // buffer for chroma and luma data
-    unsigned char  *memory_tmp;
-    
-    unsigned char   *video;			        // buffer for RGB-Data
+    unsigned char  *luma, *chroma;         // buffer for chroma and luma data  
+    unsigned char  *video;			        // buffer for RGB-Data
     
     //fps
     long double     m_lastupdate;
