@@ -476,7 +476,7 @@ bool CGrabber::convertVideo()
 				xscale = abs(x/skiplines);
 				
 				//Set new pixel to buffer
-				rgbBuffer[cycles][pointer] = getPixel(xscale,blackbars_y); //Add current pixel to buffer
+				rgbBuffer[cycles][pointer] = getPixel(x,blackbars_y); //Add current pixel to buffer
 
 				//Get old pixel from buffer with our timeshift.
 				rgb[2] = (rgbBuffer[cycles][counter_shift] >> 16) & 0xff;
