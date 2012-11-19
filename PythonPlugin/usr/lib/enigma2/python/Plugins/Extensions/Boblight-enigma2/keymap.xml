@@ -1,0 +1,17 @@
+<keymap>
+	<map context="ColorActions">
+		<key id="KEY_ENTER"  mapto="ok"     flags="m" />
+		<key id="KEY_OK"     mapto="ok"     flags="m" />
+		<key id="KEY_EXIT"   mapto="cancel" flags="m" />
+		<key id="KEY_ESC"    mapto="cancel" flags="m" />
+		<key id="KEY_RED"    mapto="red"    flags="m" />
+		<key id="KEY_GREEN"  mapto="green"  flags="m" />
+		<key id="KEY_YELLOW" mapto="yellow" flags="m" />
+		<key id="KEY_BLUE"   mapto="blue"   flags="m" />
+		<key id="KEY_1"      mapto="key_1"  flags="m" />
+		<key id="KEY_2"      mapto="key_2"  flags="m" />
+		<key id="KEY_3"      mapto="key_3"  flags="m" />
+		<key id="KEY_0"      mapto="key_0"  flags="m" />
+		<key id="KEY_INFO"   mapto="info"   flags="m" />
+	</map>
+</keymap>
