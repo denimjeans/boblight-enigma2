@@ -1,0 +1,714 @@
+#!/bin/sh
+
+##################################################
+#       boblight-enigma2 Control script v1.8     #
+##################################################
+
+### init vars ###
+
+modprobe -a cdc_acm
+modprobe -a ftdi-sio
+
+DPID=`pidof boblightd|head -n1`
+DBIN="/usr/bin/boblightd"
+
+PID=`pidof boblight-enigma2|head -n1`
+RUN=/tmp/.boblight-enigma2
+
+RUN_CHASE=/tmp/.boblight-chase
+
+CFG=/etc/enigma2/settings
+
+BIN="/usr/bin/boblight-enigma2"
+
+CHASEBIN="/usr/bin/boblight-chase"
+CHASEPID=`pidof boblight-chase|head -n1`
+
+# reset all parameters to null - boblight-enigma2
+P0=
+P1=
+P2=
+P3=
+P4=
+P5=
+P6=
+P7=
+P8=
+P10=
+P11=
+P12=
+P13=
+P14=
+P15=
+P16=
+P17=
+P18=
+P19=
+P20=
+P21=
+P22=
+P23=
+P25=
+P26=
+P27=
+
+# reset all parameters to null - boblight-chase
+W1=
+W2=
+W3=
+W4=
+W5=
+
+################################# Options ########################################
+#
+#  -p  priority, from 0 to 255, default is 128
+#  -s  address:[port], set the address and optional port to connect to
+#  -o  add libboblight option, syntax: [light:]option=value
+#  -u  nr of pixels to use [Default 16]
+#  -y  set the sync mode, default is on, valid options are "on" and "off"
+#
+###################################################################################
+
+# priority        : -p  priority, from 0 to 255, default is 128
+PRIORITY=Boblight_grab.priority=
+if [ ! -z $(grep ${PRIORITY} ${CFG} | cut -d= -f2) ]; then P1="-p "$(grep ${PRIORITY} ${CFG} | cut -d= -f2); fi
+
+# address:port    : -s  address:[port], set the address and optional port to connect to
+PORT=Boblight_grab.port=
+if [ ! -z $(grep ${PORT} ${CFG} | cut -d= -f2) ]; then P0=":"$(grep ${PORT} ${CFG} | cut -d= -f2); fi
+
+ADDRESS=Boblight_grab.address=
+if [ ! -z $(grep ${ADDRESS} ${CFG} | cut -d= -f2) ]; then P2="-s "$(grep ${ADDRESS} ${CFG} | cut -d= -f2); fi
+
+# nrpixels        : -u  nr of pixels to use [Default 64]
+PIXELS=Boblight_grab.pixels=
+if [ ! -z $(grep ${PIXELS} ${CFG} | cut -d= -f2) ]; then P4="-u "$(grep ${PIXELS} ${CFG} | cut -d= -f2); fi
+
+# syncmode        : -y  set the sync mode, default is on, valid options are "on" and "off"
+SYNC=Boblight_grab.sync=
+if [ ! -z $(grep ${SYNC} ${CFG} | cut -d= -f2) ]; then P5="-y "$(grep ${SYNC} ${CFG} | cut -d= -f2); fi
+
+
+##################################################################################################################
+#
+#						Library commands
+#
+##################################################################################################################
+
+# speed
+SPEED=Boblight_grab.speed=
+if [ ! -z $(grep ${SPEED}  ${CFG}  | cut -d= -f2) ]; then P7="-o speed"=$(grep ${SPEED}  ${CFG} | cut -d= -f2); fi
+
+# autospeed
+AUTOSPEED=Boblight_grab.autospeed=
+if [ ! -z $(grep ${AUTOSPEED}  ${CFG}  | cut -d= -f2) ]; then P8="-o autospeed"=$(grep ${AUTOSPEED}  ${CFG} | cut -d= -f2); fi
+
+# interpolation
+INTERPOLATION=Boblight_grab.interpolation=
+if [ ! -z $(grep ${INTERPOLATION}  ${CFG}  | cut -d= -f2) ]; then P9="-o interpolation"=$(grep ${INTERPOLATION}  ${CFG} | cut -d= -f2); fi
+
+# saturationmin
+SATURATIONMIN=Boblight_grab.saturationmin=
+if [ ! -z $(grep ${SATURATIONMIN}  ${CFG}  | cut -d= -f2) ]; then P10="-o saturationmin"=$(grep ${SATURATIONMIN}  ${CFG} | cut -d= -f2); fi
+
+# saturationmax
+SATURATIONMAX=Boblight_grab.saturationmax=
+if [ ! -z $(grep ${SATURATIONMAX}  ${CFG}  | cut -d= -f2) ]; then P11="-o saturationmax"=$(grep ${SATURATIONMAX}  ${CFG} | cut -d= -f2); fi
+
+# saturation
+SATURATION=Boblight_grab.saturation=
+if [ ! -z $(grep ${SATURATION}  ${CFG}  | cut -d= -f2) ]; then P12="-o saturation"=$(grep ${SATURATION}  ${CFG} | cut -d= -f2); fi
+
+# value
+VALUE=Boblight_grab.value=
+if [ ! -z $(grep ${VALUE}  ${CFG}  | cut -d= -f2) ]; then P13="-o value"=$(grep ${VALUE}  ${CFG} | cut -d= -f2); fi
+
+# valuemin
+VALUEMIN=Boblight_grab.valuemin=
+if [ ! -z $(grep ${VALUEMIN}  ${CFG}  | cut -d= -f2) ]; then P14="-o valuemin"=$(grep ${VALUEMIN}  ${CFG} | cut -d= -f2); fi
+
+# valuemax
+VALUEMAX=Boblight_grab.valuemax=
+if [ ! -z $(grep ${VALUEMAX}  ${CFG}  | cut -d= -f2) ]; then P15="-o valuemax"=$(grep ${VALUEMAX}  ${CFG} | cut -d= -f2); fi
+
+# threshold
+THRESHOLD=Boblight_grab.threshold=
+if [ ! -z $(grep ${THRESHOLD}  ${CFG}  | cut -d= -f2) ]; then P16="-o threshold"=$(grep ${THRESHOLD}  ${CFG} | cut -d= -f2); fi
+
+# hscanstart
+HSCANSTART=Boblight_grab.hscanstart=
+if [ ! -z $(grep ${HSCANSTART}  ${CFG}  | cut -d= -f2) ]; then P17="-o hscanstart"=$(grep ${HSCANSTART}  ${CFG} | cut -d= -f2); fi
+
+# hscanend
+HSCANEND=Boblight_grab.hscanend=
+if [ ! -z $(grep ${HSCANEND}  ${CFG}  | cut -d= -f2) ]; then P18="-o hscanend"=$(grep ${HSCANEND}  ${CFG} | cut -d= -f2); fi
+
+# vscanstart
+VSCANSTART=Boblight_grab.vscanstart=
+if [ ! -z $(grep ${VSCANSTART}  ${CFG}  | cut -d= -f2) ]; then P19="-o vscanstart"=$(grep ${VSCANSTART}  ${CFG} | cut -d= -f2); fi
+
+# vscanend
+VSCANEND=Boblight_grab.vscanend=
+if [ ! -z $(grep ${VSCANEND}  ${CFG}  | cut -d= -f2) ]; then P20="-o vscanend"=$(grep ${VSCANEND}  ${CFG} | cut -d= -f2); fi
+
+# gamma
+GAMMA=Boblight_grab.gamma=
+if [ ! -z $(grep ${GAMMA}  ${CFG}  | cut -d= -f2) ]; then P25="-o gamma"=$(grep ${GAMMA}  ${CFG} | cut -d= -f2); fi
+
+# blackbar
+BLACKBAR=Boblight_grab.blackbar=
+if [ ! -z $(grep ${BLACKBAR}  ${CFG}  | cut -d= -f2) ]; then P26="-b"; fi
+
+# interval
+INTERVAL=Boblight_grab.interval=
+if [ ! -z $(grep ${INTERVAL} ${CFG} | cut -d= -f2) ]; then P27="-i "$(grep ${INTERVAL} ${CFG} | cut -d= -f2); fi
+
+######################################################################################################################
+
+##################################################################################################################
+#
+#						Library commands - boblight-chase
+#
+##################################################################################################################
+
+# mode 0 is static
+MOODLAMP_MODE=Boblight_grab.moodlamp_mode=
+if [ ! -z $(grep ${MOODLAMP_MODE}  ${CFG}  | cut -d= -f2) ]; then S=$(grep ${MOODLAMP_MODE}  ${CFG} | cut -d= -f2); else S="0"; fi
+
+if [ ${S} == "0" ]; then
+    W1="5"
+    
+    # colorr
+    MOODLAMP_COLOR_R=Boblight_grab.moodlamp_static_color_r=
+    if [ ! -z $(grep ${MOODLAMP_COLOR_R}  ${CFG}  | cut -d= -f2) ]; then W2=$(grep ${MOODLAMP_COLOR_R}  ${CFG} | cut -d= -f2); fi
+    # colorg
+    MOODLAMP_COLOR_G=Boblight_grab.moodlamp_static_color_g=
+    if [ ! -z $(grep ${MOODLAMP_COLOR_G}  ${CFG}  | cut -d= -f2) ]; then W3=$(grep ${MOODLAMP_COLOR_G}  ${CFG} | cut -d= -f2); fi
+    # colorb
+    MOODLAMP_COLOR_B=Boblight_grab.moodlamp_static_color_b=
+    if [ ! -z $(grep ${MOODLAMP_COLOR_B}  ${CFG}  | cut -d= -f2) ]; then W4=$(grep ${MOODLAMP_COLOR_B}  ${CFG} | cut -d= -f2); fi
+       
+    #Covert decimal to hex
+    MOODLAMP_COLOR=$(printf "%02x%02x%02x" ${W2} ${W3} ${W4})
+
+else
+    W1=${S}
+fi
+
+STANDBY_MOODLAMP=Boblight_grab.moodlamp_onoff_standby=
+if [ ! -z $(grep ${STANDBY_MOODLAMP}  ${CFG}  | cut -d= -f2) ]; then M=$(grep ${STANDBY_MOODLAMP}  ${CFG} | cut -d= -f2); else M=false; fi
+		
+		
+#reset
+W2=
+W3=
+W4=
+W5=
+
+
+#Set network
+NETWORK=Boblight_grab.network_onoff=
+if [ ! -z $(grep ${NETWORK}  ${CFG}  | cut -d= -f2) ]; then NET=$(grep ${NETWORK}  ${CFG} | cut -d= -f2); else NET=false; fi
+
+if [ ${NET} == "false" ]; then
+    P2=
+    P0=
+fi
+
+######################################################################################################################
+
+#Set all commands to one var
+CMD="${P1} ${P2}${P0} ${P3} ${P4} ${P5} ${P6} ${P7} ${P8} ${P9} ${P10} ${P11} ${P12} ${P13} ${P14} ${P15} ${P16} ${P17} ${P18} ${P19} ${P20} ${P21} ${P22} ${P23} ${P25} ${P26} ${P27}"
+CHASE_CMD="${W1} ${MOODLAMP_COLOR} ${P7} ${P8} ${P9} ${P10} ${P11} ${P12} ${P13} ${P14} ${P15} ${P16} ${P25}"
+
+
+###############################   Start Stop and Sleep script ####################################
+
+
+case $1 in
+	start)	
+		
+		#if [ ${PID} ]; then
+		echo "Try to stop, boblight-enigma2..."
+		killall boblight-enigma2 2>/dev/null
+			
+		#fi
+		#if [ ${CHASEPID} ]; then
+		echo "Try to stop, Stop moodlamp..."
+		killall boblight-chase 2>/dev/null
+			
+		#fi
+		
+		# Coloreffect mode true or false
+		MODE=Boblight_grab.mode=
+		if [ ! -z $(grep ${MODE}  ${CFG}  | cut -d= -f2) ]; then SAVE=$(grep ${MODE}  ${CFG} | cut -d= -f2); else SAVE="1"; fi
+		
+		#Chase mode
+		if [ ${SAVE} == "2" ]; then 
+
+			echo -n "Checking if Boblightd is running: "
+			if [ ${DPID} ]; then
+				echo " Boblight deamon running with PID ${DPID}...."
+			else
+				echo " Boblightd is not running! starting deamon...."
+				killall boblightd 2>/dev/null
+				
+				if [ ${CHASEPID} ]; then
+					echo "Chase is running, Stop moodlamp..."
+					killall boblight-chase 2>/dev/null
+				fi
+				
+				sleep 1
+				
+				if [ ${PID} ]; then
+					echo "Stopping boblight-enigma2..."
+					killall boblight-enigma2 2>/dev/null
+				fi
+				
+				if [ ${NET} == "false" ]; then
+                    ${DBIN} -f &
+				    sleep 2
+				fi
+				
+			fi
+			
+			sleep 1
+			echo "Starting moodlamp..."
+			${CHASEBIN} ${CHASE_CMD} &
+			
+		else
+			echo -n "Checking if Boblightd is running: "
+			if [ ${DPID} ]; then
+				echo " Boblight deamon running with PID ${DPID}...."
+			else
+				echo " Boblightd is not running! starting deamon...."
+				killall boblightd 2>/dev/null
+				
+				if [ ${CHASEPID} ]; then
+					echo "Chase is running, Stop moodlamp..."
+					killall boblight-chase 2>/dev/null
+				fi
+				
+				sleep 1
+				
+				if [ ${PID} ]; then
+					echo "Stopping boblight-enigma2..."
+					killall boblight-enigma2 2>/dev/null
+				fi
+				
+				if [ ${NET} == "false" ]; then
+                    ${DBIN} -f &
+				    sleep 2
+				fi
+			fi
+			
+		    sleep 1
+            echo "Starting Grabber..."
+            ${BIN} ${CMD} &
+		fi
+			
+		
+	;;
+	
+	
+	stop)
+		echo "Stopping Boblight-enigma2..."
+			killall boblight-enigma2 2>/dev/null
+		echo "Try to stop moodlamp...."
+		        killall boblight-chase 2>/dev/null
+			sleep 2
+			
+		    if [ ${M} == "true" ]; then
+		            echo -n "Checking if Boblightd is running: "
+		            if [ ${DPID} ]; then
+			            echo " Boblight deamon running with PID ${DPID}...."
+		            else
+			            echo " Boblightd is not running! starting deamon...."
+			            killall boblightd 2>/dev/null
+			
+			            if [ ${NET} == "false" ]; then
+                                sleep 1
+			                    ${DBIN} -f &
+			                    sleep 3
+			            fi
+		            fi
+		
+		            echo "Starting moodlamp..."
+		            ${CHASEBIN} ${CHASE_CMD} &
+		    else
+		        killall boblightd 2>/dev/null
+			    sleep 1
+			fi
+
+	;;
+	
+	sleep)
+	
+	    STANDBY=Boblight_grab.standby=
+        if [ ! -z $(grep ${STANDBY}  ${CFG}  | cut -d= -f2) ]; then S=$(grep ${STANDBY}  ${CFG} | cut -d= -f2); else S=false; fi
+         
+        if [ ${S} == "true" ]; then
+		    #if [ ${PID} ]; then
+			    echo "Try to stop, boblight-enigma2..."
+			    killall boblight-enigma2 2>/dev/null
+			
+		    #fi
+		    #if [ ${CHASEPID} ]; then
+			    echo "Try to stop, moodlamp..."
+			    killall boblight-chase 2>/dev/null
+			
+		    #fi
+		        if [ ${M} == "true" ]; then
+		            echo -n "Checking if Boblightd is running: "
+		            if [ ${DPID} ]; then
+			            echo " Boblight deamon running with PID ${DPID}...."
+		            else
+			            echo " Boblightd is not running! starting deamon...."
+			            killall boblightd 2>/dev/null
+			
+			             if [ ${NET} == "false" ]; then
+                                sleep 1
+			                    ${DBIN} -f &
+			                    sleep 3
+			            fi
+		            fi
+		
+		            echo "Starting moodlamp..."
+		            ${CHASEBIN} ${CHASE_CMD} &
+		        fi
+		else
+		    echo "Stop!, Sleep function is disabled in plugin."
+		fi
+	;;
+	
+	wakeup)
+		
+		STANDBY=Boblight_grab.standby=
+        if [ ! -z $(grep ${STANDBY}  ${CFG}  | cut -d= -f2) ]; then S=$(grep ${STANDBY}  ${CFG} | cut -d= -f2); else S=false; fi
+        
+        if [ ${S} == "true" ]; then
+		    echo -n "Check if Boblightd is running: "
+		    if [ ${DPID} ]; then
+			    echo " Boblight deamon running with PID ${DPID}...."
+		    else
+			    echo " Boblightd is not running! starting deamon...."
+			     if [ ${NET} == "false" ]; then
+                    ${DBIN} -f &
+                    sleep 3
+			     fi
+		    fi
+		
+		    #if [ ${PID} ]; then
+			    echo "Try to stop, boblight-enigma2..."
+			    killall boblight-enigma2 2>/dev/null
+			
+		    #fi
+		    #if [ ${CHASEPID} ]; then
+			    echo "Try to stop, moodlamp..."
+			    killall boblight-chase 2>/dev/null
+			
+		    #fi
+		    sleep 1
+		
+		    # Coloreffect mode true or false
+		    MODE=Boblight_grab.chasemode=
+		    if [ ! -z $(grep ${MODE}  ${CFG}  | cut -d= -f2) ]; then SAVE=$(grep ${MODE}  ${CFG} | cut -d= -f2); else SAVE=false; fi
+		
+		    #Chase mode
+		    if [ ${SAVE} == "false" ]; then 
+			    echo "Starting Grabber...";
+			    ${BIN} ${CMD} &
+		    else
+			    echo "Starting moodlamp...";
+			    ${CHASEBIN} ${CHASE_CMD} &
+		    fi
+		else
+		    echo "Stop!, Sleep function is disabled in plugin."
+		fi
+	;;
+
+	restart)
+		
+		#if [ ${PID} ]; then
+		echo "Try to stop, boblight-enigma2..."
+		killall boblight-enigma2 2>/dev/null
+			
+		#fi
+		#if [ ${CHASEPID} ]; then
+		echo "Try to stop, Stop moodlamp..."
+		killall boblight-chase 2>/dev/null
+			
+		#fi
+		
+		# Coloreffect mode true or false
+		MODE=Boblight_grab.mode=
+		if [ ! -z $(grep ${MODE}  ${CFG}  | cut -d= -f2) ]; then SAVE=$(grep ${MODE}  ${CFG} | cut -d= -f2); else SAVE="1"; fi
+		
+		#Chase mode
+		if [ ${SAVE} == "2" ]; then 
+
+			echo -n "Checking if Boblightd is running: "
+			if [ ${DPID} ]; then
+				echo " Boblight deamon running with PID ${DPID}...."
+			else
+				echo " Boblightd is not running! starting deamon...."
+				killall boblightd 2>/dev/null
+				
+				if [ ${CHASEPID} ]; then
+					echo "Chase is running, Stop moodlamp..."
+					killall boblight-chase 2>/dev/null
+				fi
+				
+				sleep 1
+				
+				if [ ${PID} ]; then
+					echo "Stopping boblight-enigma2..."
+					killall boblight-enigma2 2>/dev/null
+				fi
+				
+				if [ ${NET} == "false" ]; then
+                    ${DBIN} -f &
+                    sleep 2
+			    fi
+			fi
+			
+			sleep 1
+			echo "Starting moodlamp..."
+			${CHASEBIN} ${CHASE_CMD} &
+			
+		else
+			echo -n "Checking if Boblightd is running: "
+			if [ ${DPID} ]; then
+				echo " Boblight deamon running with PID ${DPID}...."
+			else
+				echo " Boblightd is not running! starting deamon...."
+				killall boblightd 2>/dev/null
+				
+				if [ ${CHASEPID} ]; then
+					echo "Chase is running, Stop moodlamp..."
+					killall boblight-chase 2>/dev/null
+				fi
+				
+				sleep 1
+				
+				if [ ${PID} ]; then
+					echo "Stopping boblight-enigma2..."
+					killall boblight-enigma2 2>/dev/null
+				fi
+				
+				if [ ${NET} == "false" ]; then
+                    ${DBIN} -f &
+                    sleep 2
+			    fi
+			fi
+			
+			sleep 1
+			echo "Starting Grabber..."
+			${BIN} ${CMD} &
+		fi
+			
+		
+	;;
+	
+	start_moodlamp)
+		if [ ${CHASEPID} ]; then
+			echo "Stopping moodlamp..."
+			killall boblight-chase 2>/dev/null
+			
+		fi
+		
+		if [ ${PID} ]; then
+				echo "Stopping boblight-enigma2..."
+				killall boblight-enigma2 2>/dev/null
+		fi
+		
+		echo -n "Checking if Boblightd is running: "
+		if [ ${DPID} ]; then
+			echo " Boblight deamon running with PID ${DPID}...."
+		else
+			echo " Boblightd is not running! starting deamon...."
+			killall boblightd 2>/dev/null
+			
+            if [ ${NET} == "false" ]; then
+                ${DBIN} -f &
+                sleep 2
+            fi
+		fi
+		
+		echo "Starting moodlamp..."
+		${CHASEBIN} ${CHASE_CMD} &
+	;;
+	
+	restart_moodlamp)
+		if [ ${CHASEPID} ]; then
+			echo "Stopping moodlamp..."
+			killall boblight-chase 2>/dev/null
+			
+		fi
+		
+		if [ ${PID} ]; then
+				echo "Stopping boblight-enigma2..."
+				killall boblight-enigma2 2>/dev/null
+		fi
+		
+		echo -n "Checking if Boblightd is running: "
+		if [ ${DPID} ]; then
+			echo " Boblight deamon running with PID ${DPID}...."
+		else
+			echo " Boblightd is not running! starting deamon...."
+			killall boblightd 2>/dev/null
+			
+            if [ ${NET} == "false" ]; then
+                ${DBIN} -f &
+                sleep 2
+            fi
+		fi
+		sleep 1
+		echo "Starting moodlamp..."
+		${CHASEBIN} ${CHASE_CMD} &
+	;;
+
+	toggle)
+		
+		# Coloreffect mode true or false
+		MODE=Boblight_grab.mode=
+		if [ ! -z $(grep ${MODE}  ${CFG}  | cut -d= -f2) ]; then SAVE=$(grep ${MODE}  ${CFG} | cut -d= -f2); else SAVE="1"; fi
+		
+		#Chase mode
+		if [ ${SAVE} == "2" ]; then 
+		
+			if [ ${CHASEPID} ]; then
+				echo "Stopping boblightd and moodlamp..."
+				killall boblight-chase 2>/dev/null
+				killall boblightd 2>/dev/null
+				sleep 2
+				
+				if [ ${M} == "true" ]; then
+		            echo -n "Checking if Boblightd is running: "
+		            if [ ${DPID} ]; then
+			            echo " Boblight deamon running with PID ${DPID}...."
+		            else
+			            echo " Boblightd is not running! starting deamon...."
+			            killall boblightd 2>/dev/null
+			            
+                        if [ ${NET} == "false" ]; then
+                                sleep 1
+                                ${DBIN} -f &
+                                sleep 2
+			            fi
+		            fi
+		
+		            echo "Starting moodlamp..."
+		            ${CHASEBIN} ${CHASE_CMD} &
+		        fi
+		        
+			else
+			
+				echo -n "Checking if Boblightd is running: "
+				if [ ${DPID} ]; then
+					echo " Boblight deamon running with PID ${DPID}...."
+				else
+					echo " Boblightd is not running! starting deamon...."
+					killall boblightd 2>/dev/null
+					
+                    if [ ${NET} == "false" ]; then
+                         sleep 1
+                         ${DBIN} -f &
+                         sleep 2
+                    fi
+				fi
+		
+				if [ ${CHASEPID} ]; then
+					echo "Stopping moodlamp..."
+					killall boblight-chase 2>/dev/null
+				fi
+				
+				if [ ${PID} ]; then
+						echo "Stopping boblight-enigma2..."
+						killall boblight-enigma2 2>/dev/null
+				fi
+				
+				echo "Starting boblight-chase..."
+				${CHASEBIN} ${CHASE_CMD} &
+				
+			fi
+		
+		
+		else
+		
+			if [ ${PID} ]; then
+					echo "Stopping deamon and boblight-enigma2..."
+					killall boblight-enigma2 2>/dev/null
+					killall boblightd 2>/dev/null
+					sleep 2
+					
+					if [ ${M} == "true" ]; then
+		                echo -n "Checking if Boblightd is running: "
+		                if [ ${DPID} ]; then
+			                echo " Boblight deamon running with PID ${DPID}...."
+		                else
+			                echo " Boblightd is not running! starting deamon...."
+			                killall boblightd 2>/dev/null
+			
+                            if [ ${NET} == "false" ]; then
+                                sleep 1
+                                ${DBIN} -f &
+                                sleep 2
+                            fi
+		                fi
+		
+		                echo "Starting moodlamp..."
+		                ${CHASEBIN} ${CHASE_CMD} &
+		            fi
+			else
+			
+				echo -n "Checking if Boblightd is running: "
+				if [ ${DPID} ]; then
+					echo " Boblight deamon running with PID ${DPID}...."
+				else
+					echo " Boblightd is not running! starting deamon...."
+					killall boblightd 2>/dev/null
+					
+                    if [ ${NET} == "false" ]; then
+                         sleep 1
+                         ${DBIN} -f &
+                         sleep 2
+                    fi
+				fi
+				
+				if [ ${CHASEPID} ]; then
+					echo "Stopping moodlamp..."
+					killall boblight-chase 2>/dev/null
+				fi
+				
+				if [ ${PID} ]; then
+						echo "Stopping boblight-enigma2..."
+						killall boblight-enigma2 2>/dev/null
+				fi
+				
+				echo "Starting boblight-enigma2..."
+				${BIN} ${CMD} &
+			fi
+
+		fi
+	;;
+
+	status)
+		echo -n "Checking boblight-enigma2: "
+		if [ ${PID} ]; then
+			echo "running with PID ${PID}"
+		else
+			echo "not running"
+		fi
+	;;
+
+	help)
+		/usr/bin/boblight-enigma2 -h
+	;;
+
+	*)
+		echo "boblight-enigma2 Usage: $0 { start | stop | restart |  toggle | status | help }"
+		echo "moodlamp Usage: $0 { start_moodlamp | stop | restart_moodlamp | help }"
+	;;
+esac
+exit 0
