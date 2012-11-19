@@ -1,7 +1,7 @@
 /*
  * Boblight
  * Copyright (C) Bob Loosen  2009 
- * Copyright (C) Martijn Vos and Carsten presser 2012
+ * Copyright (C) Martijn Vos and c@presser 2012
  *
  * boblight is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -94,7 +94,7 @@ int main (int argc, char *argv[])
   signal(SIGINT, SignalHandler);
   
   system("clear");
-  printf("boblight-enigma2 0.5r12 (c) 2012 Martijn Vos(speedyisfast) and c@rstenpresser.de\n\n");
+  printf("boblight-enigma2 0.5r12 (c) 2012 Martijn Vos(speedyisfast) and c@rstenpresser\n\n");
   
   //keeps running until some unrecoverable error happens
   return Run();
