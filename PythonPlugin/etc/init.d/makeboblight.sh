@@ -230,7 +230,6 @@ current=1
 colorcount=1
 
 
-
 if [ $left -ne 0 ]; then
 	lcount=1
 	lrange=$(echo "scale=2; 100 / $left" | bc)
@@ -294,6 +293,7 @@ if [ $top -ne 0 ]; then
 		((current++))
 	done
 fi
+
 
 if [ $right -ne 0 ]; then
 	rcount=1
@@ -371,5 +371,3 @@ else
     mv boblight.conf /home/boblight.conf 2>/dev/null
     echo "File 'boblight.conf saved to /home"
 fi
-
-cat boblight.conf
