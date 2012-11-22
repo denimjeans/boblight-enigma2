@@ -110,6 +110,9 @@ void CGrabber::DeletePixelData(){
 
 void CGrabber::ResetPixelData(){
 	
+	if(m_debug)
+		printf("[grabber] Reset buffer.\n");
+	
 	for(int y = 0; y < numRows; y++){
 		for(int x = 0; x < numCols; x++){
 			rgbBuffer[y][x] = 0;
@@ -184,8 +187,8 @@ bool CGrabber::Setup()
 	chroma = (unsigned char*)malloc(1920 * m_size * 3);
 	luma   = (unsigned char*)malloc(1920 * m_size * 3/2 ); // haft the size would also be okay
 	
-	//Create pixelbuffer for 1024 cycles.
-	rgbBuffer = create_2D_char_array(1024, 256);
+	// Create pixelbuffer for 1024 cycles.
+	rgbBuffer = create_2D_char_array(3000, 256);
 
 	// prepare the video-buffer (vastly oversized!!)
 	video  = (unsigned char*)malloc(m_size * m_size * 2 * 3);
@@ -233,12 +236,14 @@ bool CGrabber::Run()
 			return true;
 		}
 		
-		m_timer.Wait(); //Wait some msec.
-				
-		UpdateDebugFps();
+		//Wait some msec.
+		m_timer.Wait(); 
 		
 		if (m_blackbar) beamcount++;
 		
+		//Update fps counter
+		UpdateDebugFps();
+
 		cyclecount++; //For the coming timeshift calculation
 	}
 	
@@ -372,24 +377,24 @@ bool CGrabber::detectSTB()
 
 int CGrabber::getPixel(int xpos, int ypos)
 {  
-   int y = luma[xpos + ypos*xres];					//luma lines
-   int u = chroma[(xpos&~1) + (ypos>>1)*xres + 1];	//chroma lines +1
-   int v = chroma[(xpos&~1) + (ypos>>1)*xres];		//chroma lines
+	int y = luma[xpos + ypos*xres];					//luma lines
+	int u = chroma[(xpos&~1) + (ypos>>1)*xres + 1];	//chroma lines +1
+	int v = chroma[(xpos&~1) + (ypos>>1)*xres];		//chroma lines
 
-   // Formulas from Wikipedia...
-   int lum = 9535 * (y-16);
+	// Formulas from Wikipedia...
+	int lum = 9535 * (y-16);
    
-   // Return Black if 'lum' lower or same as 0
-   if (lum < 0){return 0;}
+	// Return Black if 'lum' lower or same as 0
+	if (lum < 0){return 0;}
    
-   v -= 128;
-   u -= 128;
+	v -= 128;
+	u -= 128;
    
-   int r = CLIP((lum + (16531 * u)) >> 13);
-   int g = CLIP((lum - (6660 * v) - (3202 * u)) >> 13);
-   int b = CLIP((lum + (13074 * v)) >> 13);
+	int r = CLIP((lum + (16531 * u)) >> 13);
+	int g = CLIP((lum - (6660 * v) - (3202 * u)) >> 13);
+	int b = CLIP((lum + (13074 * v)) >> 13);
 
-   return (r << 16) | (g << 8) | b; 
+	return (r << 16) | (g << 8) | b; 
 }
 
 bool CGrabber::convertVideo() 
@@ -417,13 +422,13 @@ bool CGrabber::convertVideo()
 	}
 	
 	
-	if  ((yres_old!=yres) || (xres_old!=adjust_x) || yres <= 0 || xres <= 0) 
+	if  ((yres_old!=yres) || (xres_old!=adjust_x) || yres <= 1 || xres <= 1) 
 	{   
 		//Reset some globals
 		save_bottom=save_top=save_total=0;
 		sb_toggle=false;
 		
-		blank=false;
+		blank=true;
 		
 		//Reset buffer
 		ResetPixelData();
@@ -447,7 +452,7 @@ bool CGrabber::convertVideo()
 	}
 		
 	//Set loopcounter to 0
-	cycles=0;
+	cycles = 0;
 	
 	for (y=0; y < end; y+=2)
 	{
@@ -455,20 +460,23 @@ bool CGrabber::convertVideo()
 		{ 
 			blackbars_y=abs(y-save_bottom); //new y
 			
-			if(blank)
+			if(blank || yres <= 1 || xres <= 1)
 			{	
-				//Reset buffer when count is 3000
-				if(blank_count == 3000 || blank_count == 0){ ResetPixelData();}
-					
+				//set timeshift to 0
+				timeshift=0;
+				
+				//Reset buffer when count is 9000
+				if(blank_count == (9000) || blank_count == 0){ ResetPixelData();}
+				
+				//set actual pixel to black
 				rgbBuffer[cycles][pointer] = 0; 
 				
-				rgb[0]=0;
-				rgb[1]=0;
-				rgb[2]=0;
+				//set colors
+				rgb[0]=0;rgb[1]=0;rgb[2]=0;
 				
+				//send black frame to boblight
 				boblight_addpixel(m_boblight, -1, rgb);
 				blank_count++;
-				
 			}
 			else
 			{   
@@ -482,6 +490,9 @@ bool CGrabber::convertVideo()
 				rgb[2] = (rgbBuffer[cycles][counter_shift] >> 16) & 0xff;
 				rgb[1] = (rgbBuffer[cycles][counter_shift] >> 8) & 0xff;
 				rgb[0] = (rgbBuffer[cycles][counter_shift] >> 0) & 0xff; 
+				
+				//reset pixel
+				rgbBuffer[cycles][counter_shift] = 0;
 				
 				//Add pixel to boblight
 				boblight_addpixelxy(m_boblight, xscale, y, rgb);
@@ -501,14 +512,14 @@ bool CGrabber::convertVideo()
 		CalcBeamTop();  // check for beams at top.
 		beamcount = 0;	  // reset count.
 	}
-	
-	//Adjust x resolution
-	xres=abs(xres/skiplines);
 		
 	//if picdump enabled then write picdumps to /tmp
 	if (m_picdump){
 		SaveBMP();
 	}
+	
+	//Adjust x resolution
+	xres=abs(xres/skiplines);
 
 	return true;
 }
@@ -532,7 +543,7 @@ void CGrabber::UpdateDebugFps()
 	  cyclecount=0;
 	  
 	  if(m_debug){
-		printf("\n[grabber] %2.1f FPS || cycle:%d || Shift:%d || Delay:%i",m_fps,cycle_save,timeshift,delay); 
+		printf("\n[grabber] %2.1f FPS || Framerate:%i || Shift:%d || Res:%dx%d (Source %dx%d)",m_fps,framerate,timeshift,xres,yres,xres_orig,yres_orig); 
 	  }
 	}
 }
@@ -628,10 +639,11 @@ bool CGrabber::grabVideo()
 	//grab brcm7401 pic from decoder memory
 	const unsigned char *data = (unsigned char*)mmap(0, 100, PROT_READ, MAP_SHARED, mem_fd, (stb_type == BRCM7358) ? 0x10600000 : 0x10100000);
 	
-	//get resolutions from the proc filesystem
+	//get resolutions and framerate from the proc filesystem
 	file_scanf_line("/proc/stb/vmpeg/0/yres", "%x", &yres);
 	file_scanf_line("/proc/stb/vmpeg/0/xres", "%x", &xres);
-
+	file_scanf_line("/proc/stb/vmpeg/0/framerate", "%i", &framerate);
+	
 	res = stride = 0;
 	
 	if(!data)
@@ -658,33 +670,28 @@ bool CGrabber::grabVideo()
 		adr=(data[0x1f]<<24|data[0x1e]<<16|data[0x1d]<<8|data[0x1c])&0xFFFFFF00; // start of  videomem
 		adr2=(data[0x23]<<24|data[0x22]<<16|data[0x21]<<8|data[0x20])&0xFFFFFF00;
 	}			
-	
+
 	offset=adr2-adr;
+	munmap((void*)data, 100);
+	//printf("Stride: %d Res: %d\n",stride,res);
+	//printf("Adr: %X Adr2: %X OFS: %d %d C-offset:%d\n",adr,adr2,ofs,ofs2,offset);
 
 	// Check that obtained values are sane and prevent segfaults.
 	if ((adr == 0) || (adr2 == 0) || (adr2 <= adr))
 	{   
-		munmap((void*)data, 100);
 		if(m_debug){
 			printf("[Debug] Got invalid memory offsets, retry... (adr=0x%x,adr2=0x%x)\n", adr, adr2);
 		}
 		blank = true;return false;
 	}
-	munmap((void*)data, 100);
 	
 	if (yres <= 0) {
-			
-		if(m_debug){
-			printf("[Debug] Y-Resolution invalid: %d\n",yres); 
-		}
+
 		blank = true;return false;
 	}
 
 	if (xres <= 0) {
-			
-		if(m_debug){
-			printf("[Debug] X-Resolution invalid: %d\n",xres); 
-		}
+
 		blank = true;return false;
 	}
 	
@@ -699,14 +706,14 @@ bool CGrabber::grabVideo()
 	memory_size = 0;
 	memory_tmp  = NULL;
 	
-	if (stb_type == BRCM7401 || stb_type == BRCM7358 || stb_type == BRCM7405)
+	if (stb_type == BRCM7401 || stb_type == BRCM7358 || stb_type == BRCM7405 )
 	{
 		// on dm800/dm500hd we have direct access to the decoder memory
-		memory_size = offset + stride*(ofs2+64);
+		memory_size = offset + stride*(ofs2+128);
 		
 		//With this resolution whe need higher size, strange ??? with 128 its ok.
 		if(xres==528 && yres == 576)
-			memory_size = offset + stride*(ofs2+128); 
+			memory_size = offset + stride*(ofs2+64); 
 		
 		memory_tmp = (unsigned char*)mmap(0, memory_size, PROT_READ, MAP_SHARED, mem_fd, adr);
 
@@ -719,38 +726,31 @@ bool CGrabber::grabVideo()
 		
 		//Set blank to false
 		blank = false;
-		 
-		if(yres > 1000){ usleep(50000);delay=50;}
-		else if(yres > 700 && xres > 1200){ usleep(50000);delay=50;}
-		else if(yres > 700){ usleep(2000);delay=2;}
-		else if(yres > 500 && xres > 700){ usleep(2000);delay=2;}
-		else{usleep(50000);delay=50;}
+		timeshift=0;
+		
+		//Sleep some time for good sync
+		if(yres > 1000 || yres > 700 && xres > 1200) // hd
+			usleep(50000);
+		else if(yres > 700 || yres > 500 && xres > 700) // sd
+			usleep(2000);
+		else
+			usleep(50000); // others
 
-	
-		if(yres >= 1000 && xres >= 1800) //hd 50000 fps * 50 + 3000 / 350 = blbla / 2
-			timeshift=5;
-		else if(yres >= 700 && xres >= 1200) //hd 80000
-			timeshift=5;
-		else if(yres >= 1000) //hd
-			timeshift=6;
-		else if(yres >= 570 && xres >= 700) //sd 50000
-			timeshift=1;
-		else if(yres >= 576 && xres >= 544) //sd 50000
-			timeshift=3;
-		else if(yres >= 470 && xres >= 630) //sd 50000
-			timeshift=13;
-		else if(yres == 400 && xres == 704) //sd 50000
-	   		timeshift=12;
-		else if(yres >= 400 && xres >= 700) //sd 50000
-			timeshift=2;
-		else if(yres >= 350 && xres >= 630) //sd 50000
-			timeshift=13;
-		else if(yres >= 300 && xres >= 700) //sd 50000
-			timeshift=11;
-		else 
-			timeshift=0; // :)
+		//Set timeshift, framerates, 23976 24000 25000 29970 30000 50000 59940 60000
+		if(ofs+ofs2 >= 1750 && framerate >= 25000 || ofs+ofs2 >= 1750 && framerate >= 50000 || ofs+ofs2 >= 1280 && framerate >= 50000)
+		   timeshift=5;
+		else if(ofs+ofs2 >= 1280 && framerate >= 25000 || ofs+ofs2 >= 1280 && framerate >= 23000 || ofs+ofs2 >= 1020 && framerate >= 25000 && yres <= 500 || ofs+ofs2 >= 1020 && framerate >= 50000)
+		  timeshift=13;
+		else if(ofs+ofs2 >= 1020 && framerate >= 29000 && yres <= 700 || ofs+ofs2 >= 1020 && framerate >= 29000 && yres <= 400) //sd
+		  timeshift=3;
+		else if(ofs+ofs2 >= 1020 && framerate >= 25000 && yres <= 700 || ofs+ofs2 >= 750  && framerate >= 29000) //sd
+		  timeshift=1;
+		else
+		  timeshift=0; // :)
 			
-		//Set test timeshift from arg
+		//timeshift=CLIP(cycle_save*delay/100);
+			
+		//Set test timeshift from arg for testing.
 		if(!m_timeshift == 0)
 			timeshift=m_timeshift;
 
@@ -870,7 +870,7 @@ bool CGrabber::grabVideo()
 	// un-map memory
 	if (stb_type == BRCM7401 || stb_type == BRCM7358 || stb_type == BRCM7405){
 			munmap(memory_tmp, memory_size);
-	}else if (stb_type == BRCM7400 || stb_type == BRCM7335 ){
+	}else if (stb_type == BRCM7400 || stb_type == BRCM7335){
 			memory_tmp -= 0x1000;
 			munmap(memory_tmp, DMA_BLOCKSIZE + 0x1000);
 	}
@@ -890,14 +890,14 @@ bool CGrabber::SaveBMP() {
 	int xscale;
 	
 	// yuv2rgb conversion (4:2:0)
-	rgbskip = xres_orig * 3 / skiplines;
+	rgbskip = xres * 3 / skiplines;
 	pos_rgb=0;
-	for (y=0; y < yres_orig; y+=2)
+	for (y=0; y < yres; y+=2)
 	{
-		for (x=0; x < xres_orig; x+=skiplines*4)
+		for (x=0; x < xres; x+=skiplines*4)
 		{
-			pos_luma = x + (y * xres_orig);
-			pos_chr  = x + (y * xres_orig / 2);
+			pos_luma = x + (y * xres);
+			pos_chr  = x + (y * xres / 2);
 			xscale = x/skiplines;
 			
 			// chroma contains both U and V data
@@ -939,22 +939,22 @@ bool CGrabber::SaveBMP() {
 			//
 			// this is the second line (+rgbskip)			
 			//
-			Y=yuv2rgbtable_y[luma[xres_orig+pos_luma+3]];
+			Y=yuv2rgbtable_y[luma[xres+pos_luma+3]];
 			video[pos_rgb+rgbskip]=CLAMP((Y + RU)>>16);
 			video[pos_rgb+1+rgbskip]=CLAMP((Y - GV - GU)>>16);
 			video[pos_rgb+2+rgbskip]=CLAMP((Y + BV)>>16);
 
-			Y=yuv2rgbtable_y[luma[xres_orig+pos_luma+2]];
+			Y=yuv2rgbtable_y[luma[xres+pos_luma+2]];
 			video[pos_rgb+3+rgbskip]=CLAMP((Y + RU)>>16);
 			video[pos_rgb+4+rgbskip]=CLAMP((Y - GV - GU)>>16);
 			video[pos_rgb+5+rgbskip]=CLAMP((Y + BV)>>16); 
 			
-			Y=yuv2rgbtable_y[luma[xres_orig+pos_luma+1]];
+			Y=yuv2rgbtable_y[luma[xres+pos_luma+1]];
 			video[pos_rgb+6+rgbskip]=CLAMP((Y + RU2)>>16);
 			video[pos_rgb+7+rgbskip]=CLAMP((Y - GV2 - GU2)>>16);
 			video[pos_rgb+8+rgbskip]=CLAMP((Y + BV2)>>16);
 						
-			Y=yuv2rgbtable_y[luma[xres_orig+pos_luma]];
+			Y=yuv2rgbtable_y[luma[xres+pos_luma]];
 			video[pos_rgb+9+rgbskip]=CLAMP((Y + RU2)>>16);
 			video[pos_rgb+10+rgbskip]=CLAMP((Y - GV2 - GU2)>>16);
 			video[pos_rgb+11+rgbskip]=CLAMP((Y + BV2)>>16);
@@ -964,6 +964,9 @@ bool CGrabber::SaveBMP() {
 		}
 		pos_rgb+=rgbskip;	// skip a complete line
 	}
+	
+	//Adjust x resolution
+	xres=abs(xres/skiplines);
 	
 	// XXX Todo Bitmaps are BGR, my Video Data is RGB
 	char buffer [50]; // stores the filename
