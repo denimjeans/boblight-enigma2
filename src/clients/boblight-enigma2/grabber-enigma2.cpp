@@ -633,16 +633,18 @@ int CGrabber::file_scanf_lines(const char *filename, const char *fmt, ...)
 
 bool CGrabber::grabVideo()
 {
+	blank = false;
+	
 	int t,stride,res,adr,adr2,ofs,ofs2,offset,xtmp,xsub,ytmp,t2,dat1,memory_size;
 	unsigned char  *memory_tmp;
 	
 	//grab brcm7401 pic from decoder memory
 	const unsigned char *data = (unsigned char*)mmap(0, 100, PROT_READ, MAP_SHARED, mem_fd, (stb_type == BRCM7358) ? 0x10600000 : 0x10100000);
 	
-	//get resolutions and framerate from the proc filesystem
+	//get resolutions from the proc filesystem
 	file_scanf_line("/proc/stb/vmpeg/0/yres", "%x", &yres);
 	file_scanf_line("/proc/stb/vmpeg/0/xres", "%x", &xres);
-	file_scanf_line("/proc/stb/vmpeg/0/framerate", "%i", &framerate);
+	
 	
 	res = stride = 0;
 	
@@ -708,6 +710,9 @@ bool CGrabber::grabVideo()
 	
 	if (stb_type == BRCM7401 || stb_type == BRCM7358 || stb_type == BRCM7405 )
 	{
+		// get actual framerate;
+		file_scanf_line("/proc/stb/vmpeg/0/framerate", "%i", &framerate);
+		
 		// on dm800/dm500hd we have direct access to the decoder memory
 		memory_size = offset + stride*(ofs2+64);
 		
