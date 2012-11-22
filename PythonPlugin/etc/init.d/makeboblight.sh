@@ -229,37 +229,7 @@ current=1
 #Channels
 colorcount=1
 
-#if [ $bottom -ne 0 ]; then
-#	bcount=1
-#	brange=$(echo "scale=2; 100 / $bottom" | bc)
-#	bcurrent=50
-#
-#	while [ $bcount -le $(expr $bottom / 2 2>/dev/null) ]; do
-#		btop=$(echo "scale=2; $bcurrent - $brange" | bc)
-#
-#		echo >> boblight.conf
-#		echo "[light]" >> boblight.conf
-#		echo "name            bottom$bcount" >> boblight.conf
-#
-#		echo "color           red     $devicename $colorcount" >> boblight.conf
-#		((colorcount++))
-#
-#		echo "color           green   $devicename $colorcount" >> boblight.conf
-#		((colorcount++))
-#
-#		echo "color           blue    $devicename $colorcount" >> boblight.conf
-#		((colorcount++))
-#
-#		echo "hscan           $btop $bcurrent" >> boblight.conf
-#		echo "vscan           $(echo "scale=2; 100 - $depth" | bc) 100" >> boblight.conf
-#
-#
-#		bcurrent=$btop
-#
-#		((bcount++))
-#		((current++))
-#	done
-#fi
+
 
 if [ $left -ne 0 ]; then
 	lcount=1
@@ -395,10 +365,10 @@ read question
 question=${question:-y}
 
 if [ ${question} == "y" ]; then
-    #mv boblight.conf /etc/boblight.conf 2>/dev/null
+    mv boblight.conf /etc/boblight.conf 2>/dev/null
     echo "File 'boblight.conf' saved to /etc"
 else
-    #mv boblight.conf /home/boblight.conf 2>/dev/null
+    mv boblight.conf /home/boblight.conf 2>/dev/null
     echo "File 'boblight.conf saved to /home"
 fi
 
