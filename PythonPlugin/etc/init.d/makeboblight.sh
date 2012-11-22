@@ -3,7 +3,7 @@
  # boblight
  # Copyright (C) Bob Loosen 2009 
  #
- # makeboblight.sh created by Adam Boeglin <adamrb@gmail.com>, modded by Martijn Vos (Speedy1985)
+ # makeboblight.sh created by Adam Boeglin <adamrb@gmail.com>, modded by Martijn Vos (Speedy1985) and Oktay Oeztueter <info@oktay.com>
  # 
  # boblight is free software: you can redistribute it and/or modify it
  # under the terms of the GNU General Public License as published by the
@@ -36,6 +36,24 @@
 
 clear
 
+# Set the defaults
+dleft=4
+dtop=4
+dright=4
+dbottom=4
+ddevicename="karatelight"
+ddepth=20
+doutput="/dev/ttyUSB0"
+dprefix=""
+dpostfix=""
+dblacklevel="0.1"
+
+oktolight="oktolight"
+karatelight="karatelight"
+momolight="momolight"
+sedulight="sedulight"
+atmolight="atmolight"
+
 echo "*** Boblight Configuration Generator ***"
 echo "Please answer the following questions.  Press [enter] for defaults."
 echo
@@ -46,7 +64,7 @@ echo "3. Atmolight"
 echo "4. Karatelight"
 echo "5. Oktolight"
 echo ""
-echo -n "Default[4]"
+echo -n "Default[4] "
 read device
 
 #Set default
@@ -63,36 +81,41 @@ if [ ${device} == 1 ]; then
 	read postfix
 fi
 
-echo -n "What is the depth that the hscan and vscan should look into the screen? Default[20] "
+echo -n "What is the depth that the hscan and vscan should look into the screen? Default[$ddepth] "
 read depth
 
-echo -n "How many lights on the Left side? Default[0] "
+echo -n "How many lights on the Left side? Default[$dleft] "
 read left
 
-echo -n "How many lights on the Top? Default[0] "
+echo -n "How many lights on the Top? Default[$dtop] "
 read top
 
-echo -n "How many lights on the Right side? Default[0] "
+echo -n "How many lights on the Right side? Default[$dright] "
 read right
 
-echo -n "How many lights on the Bottom? Default[0] "
+echo -n "How many lights on the Bottom? Default[$dbottom] "
 read bottom
 
+echo -n "Enter the blacklevel you like. Default[$dblacklevel] "
+read blacklevel
+
+# Set the defaults, if they were accepted.
+left=${left:-$dleft}
+top=${top:-$dtop}
+right=${right:-$dright}
+bottom=${bottom:-$dbottom}
+depth=${depth:-$ddepth}
+
+blacklevel=${blacklevel:-$dblacklevel}
+
+output=${output:-$doutput}
+prefix=${prefix:-$dprefix}
+postfix=${postfix:-$dpostfix}
+
+
 # Calculate total
-total=$(expr $left + $top + $right + $bottom)
-channels=$(expr $total + $total + $total)
-
-# Set the defaults
-left=${left:-0}
-top=${top:-0}
-right=${right:-0}
-bottom=${bottom:-0}
-devicename=${devicename:-ambilight1}
-depth=${depth:-20}
-
-output=${output:-/dev/ttyUSB0}
-prefix=${prefix:-}
-postfix=${postfix:-}
+total=$((left + top + right + bottom))
+channels=$((total + total + total))
 
 echo ""
 echo "Create boblight.conf file..."
@@ -104,9 +127,9 @@ echo >> boblight.conf
 
 ## Karatelight ##
 if [ ${device} == 4 ]; then
-	
+	devicename=$karatelight	
 	echo "[device]" >> boblight.conf
-	echo "name      $devicename" >> boblight.conf
+	echo "name      $karatelight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels  $channels" >> boblight.conf
 	echo "type		karate" >> boblight.conf
@@ -117,9 +140,9 @@ fi
 
 ## Sedu ##
 if [ ${device} == 2 ]; then
-	
+	devicename=$sedulight
 	echo "[device]" >> boblight.conf
-	echo "name		$devicename" >> boblight.conf
+	echo "name		$sedulight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
 	echo "type		sedu" >> boblight.conf
@@ -129,9 +152,9 @@ fi
 
 ## Momo ##
 if [ ${device} == 1 ]; then
-	
+	devicename=$momolight
 	echo "[device]" >> boblight.conf
-	echo "name		$devicename" >> boblight.conf
+	echo "name		$momolight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
 	echo "type		momo" >> boblight.conf
@@ -147,9 +170,9 @@ fi
 
 ## Oktolight ##
 if [ ${device} == 5 ]; then
-	
+	devicename=$oktolight
 	echo "[device]" >> boblight.conf
-	echo "name		$devicename" >> boblight.conf
+	echo "name		$okotlight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
 	echo "type		karate" >> boblight.conf
@@ -160,9 +183,9 @@ fi
 
 ## Atmolight ##
 if [ ${device} == 3 ]; then
-	
+	devicename=$atmolight
 	echo "[device]" >> boblight.conf
-	echo "name		$devicename" >> boblight.conf
+	echo "name		$atmolight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
 	echo "type		atmo" >> boblight.conf >> boblight.conf
@@ -174,25 +197,37 @@ fi
 #create colors
 echo >> boblight.conf
 echo >> boblight.conf
-echo "[color]" >> boblight.conf
-echo "name		red" >> boblight.conf
-echo "rgb		FF0000" >> boblight.conf
-echo >> boblight.conf
-echo "[color]" >> boblight.conf
-echo "name		green" >> boblight.conf
-echo "rgb		00FF00" >> boblight.conf
-echo >> boblight.conf
-echo "[color]" >> boblight.conf
-echo "name		blue" >> boblight.conf
-echo "rgb		0000FF" >> boblight.conf
 
+if [ $devicename == $oktolight ]; then
+	rrgb="00FF00"
+	grgb="0000FF"
+	brgb="FF0000"
+else
+        rrgb="FF0000"
+        grgb="00FF00"
+        brgb="0000FF"
+fi
+
+echo "[color]" >> boblight.conf
+echo "name              red" >> boblight.conf
+echo "rgb               $rrgb" >> boblight.conf
+echo "blacklevel        $blacklevel" >> boblight.conf
+echo >> boblight.conf
+echo "[color]" >> boblight.conf
+echo "name              green" >> boblight.conf
+echo "rgb               $grgb" >> boblight.conf
+echo "blacklevel        $blacklevel" >> boblight.conf
+echo >> boblight.conf
+echo "[color]" >> boblight.conf
+echo "name              blue" >> boblight.conf
+echo "rgb               $brgb" >> boblight.conf
+echo "blacklevel        $blacklevel" >> boblight.conf
 
 #create lights section
 current=1
 
 #Channels
 colorcount=1
-
 
 if [ $bottom -ne 0 ]; then
 	bcount=1
