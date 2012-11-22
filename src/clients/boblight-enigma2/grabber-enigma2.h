@@ -43,7 +43,7 @@
 #define BFFB(x)   ((((x) >> (0)) & 0x3) << 6)
 
 // dont change SPARE_RAM and DMA_BLOCKSIZE until you really know what you are doing !!!
-#define SPARE_RAM 250*1024*1024 // the last 4 MB is enough...
+#define SPARE_RAM 252*1024*1024 // the last 4 MB is enough...
 #define DMA_BLOCKSIZE 0x3FF000 // should be big enough to hold a complete YUV 1920x1080 HD picture, otherwise it will not work properly on DM8000
 
 // STB-Types
