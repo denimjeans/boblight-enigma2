@@ -709,11 +709,11 @@ bool CGrabber::grabVideo()
 	if (stb_type == BRCM7401 || stb_type == BRCM7358 || stb_type == BRCM7405 )
 	{
 		// on dm800/dm500hd we have direct access to the decoder memory
-		memory_size = offset + stride*(ofs2+128);
+		memory_size = offset + stride*(ofs2+64);
 		
 		//With this resolution whe need higher size, strange ??? with 128 its ok.
 		if(xres==528 && yres == 576)
-			memory_size = offset + stride*(ofs2+64); 
+			memory_size = offset + stride*(ofs2+128); 
 		
 		memory_tmp = (unsigned char*)mmap(0, memory_size, PROT_READ, MAP_SHARED, mem_fd, adr);
 
