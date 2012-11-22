@@ -3,7 +3,7 @@
  # boblight
  # Copyright (C) Bob Loosen 2009 
  #
- # makeboblight.sh created by Adam Boeglin <adamrb@gmail.com>, modded by Martijn Vos (Speedy1985) and Oktay Oeztueter <info@oktay.com>
+ # makeboblight.sh created by Adam Boeglin <adamrb@gmail.com>, modded by Martijn Vos (Speedy1985)
  # 
  # boblight is free software: you can redistribute it and/or modify it
  # under the terms of the GNU General Public License as published by the
@@ -132,32 +132,32 @@ if [ ${device} == 4 ]; then
 	echo "name      $karatelight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels  $channels" >> boblight.conf
-	echo "type	karate" >> boblight.conf
+	echo "type		karate" >> boblight.conf
 	echo "interval	16000" >> boblight.conf
 	echo "prefix	FF" >> boblight.conf
-	echo "rate	38400" >> boblight.conf
+	echo "rate		38400" >> boblight.conf
 fi
 
 ## Sedu ##
 if [ ${device} == 2 ]; then
 	devicename=$sedulight
 	echo "[device]" >> boblight.conf
-	echo "name	$sedulight" >> boblight.conf
+	echo "name		$sedulight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
-	echo "type	sedu" >> boblight.conf
+	echo "type		sedu" >> boblight.conf
 	echo "interval	10000" >> boblight.conf
-	echo "rate	500000" >> boblight.conf
+	echo "rate		500000" >> boblight.conf
 fi
 
 ## Momo ##
 if [ ${device} == 1 ]; then
 	devicename=$momolight
 	echo "[device]" >> boblight.conf
-	echo "name	$momolight" >> boblight.conf
+	echo "name		$momolight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
-	echo "type	momo" >> boblight.conf
+	echo "type		momo" >> boblight.conf
 	echo "interval	16000" >> boblight.conf
 	if [ $prefix ]; then
 		echo "prefix	$prefix" >> boblight.conf
@@ -165,30 +165,30 @@ if [ ${device} == 1 ]; then
 	if [ $postfix ]; then
 		echo "postfix	$postfix" >> boblight.conf
 	fi
-	echo "rate	115200" >> boblight.conf
+	echo "rate		115200" >> boblight.conf
 fi
 
 ## Oktolight ##
 if [ ${device} == 5 ]; then
 	devicename=$oktolight
 	echo "[device]" >> boblight.conf
-	echo "name	$okotlight" >> boblight.conf
+	echo "name		$okotlight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
-	echo "type	karate" >> boblight.conf
+	echo "type		karate" >> boblight.conf
 	echo "interval	16000" >> boblight.conf
-	echo "rate	115200" >> boblight.conf
-    	echo "prefix    FF" >> boblight.conf
+	echo "rate		115200" >> boblight.conf
+    echo "prefix    FF" >> boblight.conf
 fi
 
 ## Atmolight ##
 if [ ${device} == 3 ]; then
 	devicename=$atmolight
 	echo "[device]" >> boblight.conf
-	echo "name	$atmolight" >> boblight.conf
+	echo "name		$atmolight" >> boblight.conf
 	echo "output    $output" >> boblight.conf
 	echo "channels	$channels" >> boblight.conf
-	echo "type	atmo" >> boblight.conf >> boblight.conf
+	echo "type		atmo" >> boblight.conf >> boblight.conf
 	echo "interval	16000" >> boblight.conf
 	echo "rate      38400" >> boblight.conf
 	echo "prefix    FF" >> boblight.conf
@@ -229,37 +229,37 @@ current=1
 #Channels
 colorcount=1
 
-if [ $bottom -ne 0 ]; then
-	bcount=1
-	brange=$(echo "scale=2; 100 / $bottom" | bc)
-	bcurrent=50
-
-	while [ $bcount -le $(expr $bottom / 2 2>/dev/null) ]; do
-		btop=$(echo "scale=2; $bcurrent - $brange" | bc)
-
-		echo >> boblight.conf
-		echo "[light]" >> boblight.conf
-		echo "name            bottom$bcount" >> boblight.conf
-
-		echo "color           red     $devicename $colorcount" >> boblight.conf
-		((colorcount++))
-
-		echo "color           green   $devicename $colorcount" >> boblight.conf
-		((colorcount++))
-
-		echo "color           blue    $devicename $colorcount" >> boblight.conf
-		((colorcount++))
-
-		echo "hscan           $btop $bcurrent" >> boblight.conf
-		echo "vscan           $(echo "scale=2; 100 - $depth" | bc) 100" >> boblight.conf
-
-
-		bcurrent=$btop
-
-		((bcount++))
-		((current++))
-	done
-fi
+#if [ $bottom -ne 0 ]; then
+#	bcount=1
+#	brange=$(echo "scale=2; 100 / $bottom" | bc)
+#	bcurrent=50
+#
+#	while [ $bcount -le $(expr $bottom / 2 2>/dev/null) ]; do
+#		btop=$(echo "scale=2; $bcurrent - $brange" | bc)
+#
+#		echo >> boblight.conf
+#		echo "[light]" >> boblight.conf
+#		echo "name            bottom$bcount" >> boblight.conf
+#
+#		echo "color           red     $devicename $colorcount" >> boblight.conf
+#		((colorcount++))
+#
+#		echo "color           green   $devicename $colorcount" >> boblight.conf
+#		((colorcount++))
+#
+#		echo "color           blue    $devicename $colorcount" >> boblight.conf
+#		((colorcount++))
+#
+#		echo "hscan           $btop $bcurrent" >> boblight.conf
+#		echo "vscan           $(echo "scale=2; 100 - $depth" | bc) 100" >> boblight.conf
+#
+#
+#		bcurrent=$btop
+#
+#		((bcount++))
+#		((current++))
+#	done
+#fi
 
 if [ $left -ne 0 ]; then
 	lcount=1
@@ -358,7 +358,10 @@ fi
 
 
 if [ $bottom -ne 0 ]; then
+	bcount=1
+
 	bcurrent=100
+	 brange=$(echo "scale=2; 100 / $bottom" | bc)
 
 	while [ $bcount -le $bottom ]; do
 		btop=$(echo "scale=2; $bcurrent - $brange" | bc)
@@ -392,9 +395,11 @@ read question
 question=${question:-y}
 
 if [ ${question} == "y" ]; then
-    mv boblight.conf /etc/boblight.conf 2>/dev/null
+    #mv boblight.conf /etc/boblight.conf 2>/dev/null
     echo "File 'boblight.conf' saved to /etc"
 else
-    mv boblight.conf /home/boblight.conf 2>/dev/null
+    #mv boblight.conf /home/boblight.conf 2>/dev/null
     echo "File 'boblight.conf saved to /home"
 fi
+
+cat boblight.conf
