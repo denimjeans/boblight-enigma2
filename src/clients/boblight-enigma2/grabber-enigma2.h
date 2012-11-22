@@ -43,7 +43,7 @@
 #define BFFB(x)   ((((x) >> (0)) & 0x3) << 6)
 
 // dont change SPARE_RAM and DMA_BLOCKSIZE until you really know what you are doing !!!
-#define SPARE_RAM 252*1024*1024 // the last 4 MB is enough...
+#define SPARE_RAM 250*1024*1024 // the last 4 MB is enough...
 #define DMA_BLOCKSIZE 0x3FF000 // should be big enough to hold a complete YUV 1920x1080 HD picture, otherwise it will not work properly on DM8000
 
 // STB-Types
@@ -124,7 +124,8 @@ class CGrabber
     int             blank_count;
     int             chr_luma_stride;
     int             xres_orig, yres_orig;	// original resolution
-    int             xres, yres;		        // final resolution
+    int             xres, yres;				// final resolution
+    long int		framerate;				// actual framerate
     int             xres_old, yres_old;	    // stored to detect resolution changes
     int             skiplines;		        // downscale-factor (power of two)
     unsigned char  *luma, *chroma;         // buffer for chroma and luma data  
