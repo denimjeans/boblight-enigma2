@@ -154,7 +154,7 @@ if [ ${device} == 5 ]; then
 	echo "channels	$channels" >> boblight.conf
 	echo "type		karate" >> boblight.conf
 	echo "interval	16000" >> boblight.conf
-	echo "rate		38400" >> boblight.conf
+	echo "rate		115200" >> boblight.conf
     echo "prefix    FF" >> boblight.conf
 fi
 
