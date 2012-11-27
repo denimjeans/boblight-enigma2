@@ -3,7 +3,11 @@
  # boblight
  # Copyright (C) Bob Loosen 2009 
  #
- # makeboblight.sh created by Adam Boeglin <adamrb@gmail.com>, modded by Martijn Vos (Speedy1985)
+ # makeboblight.sh created by Adam Boeglin <adamrb@gmail.com>
+ #                                       modded by 
+ #                                Martijn Vos (Speedy1985) 
+ #                                          and 
+ #                            Oktay Oeztueter (info@oktay.com)
  # 
  # boblight is free software: you can redistribute it and/or modify it
  # under the terms of the GNU General Public License as published by the
