@@ -7,7 +7,7 @@
  #                                       modded by 
  #                                Martijn Vos (Speedy1985) 
  #                                          and 
- #                            Oktay Oeztueter (info@oktay.com)
+ #                            Oktay Oeztueter <info@oktay.com>
  # 
  # boblight is free software: you can redistribute it and/or modify it
  # under the terms of the GNU General Public License as published by the
