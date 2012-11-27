@@ -121,8 +121,8 @@ echo ""
 echo "Create boblight.conf file..."
 rm boblight.conf 2> /dev/null
 echo "[global]"  >> boblight.conf
-echo "#interface    10.0.0.2" >> boblight.conf
-echo "#port         19333" >> boblight.conf
+echo "#interface    	10.0.0.2" >> boblight.conf
+echo "#port         	19333" >> boblight.conf
 echo >> boblight.conf
 
 ## Momo ##
@@ -130,17 +130,17 @@ if [ ${device} == 1 ]; then
 	devicename=$momolight
 	echo "[device]" >> boblight.conf
 	echo "name		$momolight" >> boblight.conf
-	echo "output    $output" >> boblight.conf
-	echo "channels	$channels" >> boblight.conf
+	echo "output   	 	$output" >> boblight.conf
+	echo "channels		$channels" >> boblight.conf
 	echo "type		momo" >> boblight.conf
-	echo "interval	16000" >> boblight.conf
+	echo "interval		16000" >> boblight.conf
 	if [ $prefix ]; then
-		echo "prefix	$prefix" >> boblight.conf
+		echo "prefix		$prefix" >> boblight.conf
 	fi
 	if [ $postfix ]; then
-		echo "postfix	$postfix" >> boblight.conf
+		echo "postfix		$postfix" >> boblight.conf
 	fi
-	echo "rate		115200" >> boblight.conf
+	echo "rate	115200" >> boblight.conf
 fi
 
 ## Sedu ##
@@ -148,10 +148,10 @@ if [ ${device} == 2 ]; then
 	devicename=$sedulight
 	echo "[device]" >> boblight.conf
 	echo "name		$sedulight" >> boblight.conf
-	echo "output    $output" >> boblight.conf
-	echo "channels	$channels" >> boblight.conf
+	echo "output    	$output" >> boblight.conf
+	echo "channels		$channels" >> boblight.conf
 	echo "type		sedu" >> boblight.conf
-	echo "interval	10000" >> boblight.conf
+	echo "interval		10000" >> boblight.conf
 	echo "rate		500000" >> boblight.conf
 fi
 
@@ -160,23 +160,23 @@ if [ ${device} == 3 ]; then
 	devicename=$atmolight
 	echo "[device]" >> boblight.conf
 	echo "name		$atmolight" >> boblight.conf
-	echo "output    $output" >> boblight.conf
-	echo "channels	$channels" >> boblight.conf
+	echo "output    	$output" >> boblight.conf
+	echo "channels		$channels" >> boblight.conf
 	echo "type		atmo" >> boblight.conf >> boblight.conf
-	echo "interval	16000" >> boblight.conf
-	echo "rate      38400" >> boblight.conf
-	echo "prefix    FF" >> boblight.conf
+	echo "interval		16000" >> boblight.conf
+	echo "rate      	38400" >> boblight.conf
+	echo "prefix    	FF" >> boblight.conf
 fi
 
 ## Karatelight ##
 if [ ${device} == 4 ]; then
 	devicename=$karatelight	
 	echo "[device]" >> boblight.conf
-	echo "name      $karatelight" >> boblight.conf
-	echo "output    $output" >> boblight.conf
-	echo "channels  $channels" >> boblight.conf
+	echo "name      	$karatelight" >> boblight.conf
+	echo "output    	$output" >> boblight.conf
+	echo "channels  	$channels" >> boblight.conf
 	echo "type		karate" >> boblight.conf
-	echo "interval	16000" >> boblight.conf
+	echo "interval		16000" >> boblight.conf
 	echo "rate		38400" >> boblight.conf
 fi
 
@@ -185,10 +185,10 @@ if [ ${device} == 5 ]; then
 	devicename=$oktolight
 	echo "[device]" >> boblight.conf
 	echo "name		$okotlight" >> boblight.conf
-	echo "output    $output" >> boblight.conf
-	echo "channels	$channels" >> boblight.conf
+	echo "output    	$output" >> boblight.conf
+	echo "channels		$channels" >> boblight.conf
 	echo "type		karate" >> boblight.conf
-	echo "interval	16000" >> boblight.conf
+	echo "interval		16000" >> boblight.conf
 	echo "rate		115200" >> boblight.conf
 fi
 
